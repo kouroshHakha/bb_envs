@@ -8,7 +8,9 @@ from typing import Mapping, Any, Sequence
 import numpy as np
 
 from bb_eval_engine.circuits.ngspice.flow import NgspiceFlowManager
-from bb_eval_engine.util.design import Design
+from bb_eval_engine.data.design import Design
+
+from ..wrappers.two_stage import TwoStageTransient
 
 class TwoStageFlow(NgspiceFlowManager):
 
@@ -20,7 +22,6 @@ class TwoStageFlow(NgspiceFlowManager):
     def interpret(self, design: Design, *args, **kwargs) -> Mapping[str, Any]:
 
         mode = args[0]
-        params_dict = design['value_dict']
 
         if mode == 'ol':
             path_vars = ['ac', 'dc']
@@ -33,27 +34,25 @@ class TwoStageFlow(NgspiceFlowManager):
         else:
             raise ValueError('invalid mode!')
 
-        params_dict.update(self.update_netlist_model_paths(design, path_vars, name=mode))
+        design.specs.update(self.get_netlist_params(design, path_vars, name=mode))
 
-        return params_dict
+        return design.specs
 
     def batch_evaluate(self, batch_of_designs: Sequence[Design], *args, **kwargs):
+        ol_dsns, cm_dsns, ps_dsns, tran_dsns = [], [], [], []
+        for dsn in batch_of_designs:
+            ol_dsns.append(self.get_netlist_params(dsn, ['ac', 'dc'], name='ol'))
+            cm_dsns.append(self.get_netlist_params(dsn, ['cm'], name='cm'))
+            ps_dsns.append(self.get_netlist_params(dsn, ['ps'], name='ps'))
+            tran_dsns.append(self.get_netlist_params(dsn, ['tran'], name='tran'))
 
-
-        interpreted_designs = [self.interpret(design, 'ol') for design in batch_of_designs]
-        raw_results = self.ngspice_lut['ol'].run(interpreted_designs, verbose=self.verbose)
+        raw_results = self.ngspice_lut['ol'].run(ol_dsns, verbose=self.verbose)
         results_ol = [res[1] for res in raw_results]
-
-        interpreted_designs = [self.interpret(design, 'cm') for design in batch_of_designs]
-        raw_results = self.ngspice_lut['cm'].run(interpreted_designs, verbose=self.verbose)
+        raw_results = self.ngspice_lut['cm'].run(cm_dsns, verbose=self.verbose)
         results_cm = [res[1] for res in raw_results]
-
-        interpreted_designs = [self.interpret(design, 'ps') for design in batch_of_designs]
-        raw_results = self.ngspice_lut['ps'].run(interpreted_designs, verbose=self.verbose)
+        raw_results = self.ngspice_lut['ps'].run(ps_dsns, verbose=self.verbose)
         results_ps = [res[1] for res in raw_results]
-
-        interpreted_designs = [self.interpret(design, 'tran') for design in batch_of_designs]
-        raw_results = self.ngspice_lut['tran'].run(interpreted_designs, verbose=self.verbose)
+        raw_results = self.ngspice_lut['tran'].run(tran_dsns, verbose=self.verbose)
         results_tran = [res[1] for res in raw_results]
 
         results = []
