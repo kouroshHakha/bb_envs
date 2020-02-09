@@ -50,8 +50,8 @@ class CsAmpNgspiceWrapper(NgSpiceWrapper):
     @classmethod
     def find_bw(cls, vout, freq):
         gain = np.abs(vout)
-        gain_3dB = gain[0] / np.sqrt(2)
-        return cls._get_best_crossing(freq, gain, gain_3dB)
+        gain_3db = gain[0] / np.sqrt(2)
+        return cls._get_best_crossing(freq, gain, gain_3db)
 
     @classmethod
     def _get_best_crossing(cls, xvec, yvec, val):
@@ -68,4 +68,3 @@ class CsAmpNgspiceWrapper(NgSpiceWrapper):
             if abs(fzero(xstart)) < abs(fzero(xstop)):
                 return xstart
             return xstop
-

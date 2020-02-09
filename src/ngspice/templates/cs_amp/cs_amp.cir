@@ -2,7 +2,7 @@ cs_amp test
 
 .include {{include}}
 
-.param  vbias={{vbias}}
+.param  vbias=0.6
 .param  rload={{rload}}
 .param  mul={{mul}}
 .param  cload=100f

@@ -15,9 +15,8 @@ bb_engine_params:
 
   # circuit parameters (degrees of freedom)
   params:
-    vbias: !!python/tuple [0, !!float 1.8, !!float 50.0e-3]
-    rload: !!python/tuple [10.0, !!float 5.0e3, 20]
-    mul:   !!python/tuple [1, 100, 1]
+    rload: !!python/tuple [100, !!float 5.0e3, 100]
+    mul:   !!python/tuple [1, 100, 2]
 
   spec_range:
     bw: [!!float 1.0e9, null, 1]
