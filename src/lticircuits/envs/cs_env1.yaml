@@ -1,0 +1,22 @@
+bb_engine: bb_eval_engine.circuits.base.CircuitsEngineBase
+bb_engine_params:
+  flow_manager_cls: lticircuits.flows.cs_amp.CSAmpFlow
+  flow_manager_params:
+    sim:
+      nmos_model:
+        k: !!float 0.25e-3
+        vth: 0.5
+        lambda_: 0.1
+      vdd: 1
+      cload: !!float 10e-15
+
+  # circuit parameters (degrees of freedom)
+  params:
+    wl_ratio: !!python/tuple [1, 20, 1]
+    rload:    !!python/tuple [0, 5000, 100]
+    vb:       !!python/tuple [0.4, 0.9, !!float 10e-3]
+
+  spec_range:
+    bw: [!!float 1.0e9, null, 1]
+    av: [!!float 1.5, null, 1]
+    ib: [null, !!float 1.0e-3, 1]
