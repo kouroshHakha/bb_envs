@@ -38,7 +38,7 @@ def synt(x):
     return (0.25*(x**4).sum(-1) - 2 * (x**2).sum(-1)) / x.shape[-1] + 5
 
 def synt2(x):
-    return (0.25*((x-2)**4).sum(-1) - 2 * ((x-2)**2).sum(-1)) / x.shape[-1] + 5
+    return (0.25*((x+0.5)**4).sum(-1) - 2 * ((x+0.5)**2).sum(-1)) / x.shape[-1] + 5
 
 def ackley(x: Union[np.ndarray, numbers.Number]) -> np.ndarray:
     # visualize it for x.dim = 2
@@ -46,6 +46,7 @@ def ackley(x: Union[np.ndarray, numbers.Number]) -> np.ndarray:
     b = 0.2
     c = 2 * np.pi
 
+    x = x - 1
     if isinstance(x, numbers.Number):
         x = np.array([x])
 
