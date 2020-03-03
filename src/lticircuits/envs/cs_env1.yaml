@@ -8,7 +8,7 @@ bb_engine_params:
         vth: 0.5
         lambda_: 0.1
       vdd: 1
-      cload: !!float 10e-15
+      cload: !!float 100e-15
 
   # circuit parameters (degrees of freedom)
   params:

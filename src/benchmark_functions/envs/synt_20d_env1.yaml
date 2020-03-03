@@ -1,0 +1,30 @@
+bb_engine: bb_eval_engine.circuits.base.CircuitsEngineBase
+bb_engine_params:
+  flow_manager_cls: benchmark_functions.flow.FnFlow
+  flow_manager_params:
+    fn: synt
+
+  params:
+    x1:   !!python/tuple [-5, 5, 0.1]
+    x2:   !!python/tuple [-5, 5, 0.1]
+    x3:   !!python/tuple [-5, 5, 0.1]
+    x4:   !!python/tuple [-5, 5, 0.1]
+    x5:   !!python/tuple [-5, 5, 0.1]
+    x6:   !!python/tuple [-5, 5, 0.1]
+    x7:   !!python/tuple [-5, 5, 0.1]
+    x8:   !!python/tuple [-5, 5, 0.1]
+    x9:   !!python/tuple [-5, 5, 0.1]
+    x10:   !!python/tuple [-5, 5, 0.1]
+    x11:   !!python/tuple [-5, 5, 0.1]
+    x12:   !!python/tuple [-5, 5, 0.1]
+    x13:   !!python/tuple [-5, 5, 0.1]
+    x14:   !!python/tuple [-5, 5, 0.1]
+    x15:   !!python/tuple [-5, 5, 0.1]
+    x16:   !!python/tuple [-5, 5, 0.1]
+    x17:   !!python/tuple [-5, 5, 0.1]
+    x18:   !!python/tuple [-5, 5, 0.1]
+    x19:   !!python/tuple [-5, 5, 0.1]
+    x20:   !!python/tuple [-5, 5, 0.1]
+
+  spec_range:
+    val:  [null, !!float 1.2, 1]
