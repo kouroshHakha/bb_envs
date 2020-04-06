@@ -9,7 +9,8 @@ from bb_eval_engine.circuits.ngspice.netlist import NgSpiceWrapper, StateValue
 
 class CsAmpNgspiceWrapper(NgSpiceWrapper):
 
-    def translate_result(self, state: Mapping[str, StateValue]) -> Mapping[str, StateValue]:
+    def translate_result(self, state: Mapping[str, StateValue],
+                         results: Mapping[str, np.ndarray]) -> Mapping[str, StateValue]:
 
         # use parse output here
         freq, vout, ibias = self.parse_output(state)

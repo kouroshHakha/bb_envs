@@ -1,0 +1,22 @@
+bb_engine: bb_eval_engine.circuits.base.CircuitsEngineBase
+bb_engine_params:
+  flow_manager_cls: benchmark_functions.flow.MultiOutputFnFlow
+  flow_manager_params:
+    fnames: [synt, synt2]
+
+  params:
+    x0:   !!python/tuple [-5, 5, 0.05]
+#    x1:   !!python/tuple [-5, 5, 0.05]
+#    x2:   !!python/tuple [-5, 5, 0.05]
+#    x3:   !!python/tuple [-5, 5, 0.05]
+#    x4:   !!python/tuple [-5, 5, 0.05]
+#    x5:   !!python/tuple [-5, 5, 0.05]
+#    x6:   !!python/tuple [-5, 5, 0.05]
+#    x7:   !!python/tuple [-5, 5, 0.05]
+#    x8:   !!python/tuple [-5, 5, 0.05]
+#    x9:   !!python/tuple [-5, 5, 0.05]
+
+  spec_range:
+    obj: [null, !!float 2.5, 0]
+    f0:   [null, !!float 1.5, 1]
+    f1:   [null, !!float 2.2, 1]

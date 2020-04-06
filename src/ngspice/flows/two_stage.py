@@ -3,9 +3,10 @@ This is an example of using blackbox_eval_engine setup for a two_stage_opamp sim
 It includes open-loop ac, transient, power supply rejection and common mode testbenches.
 """
 
-from typing import Mapping, Any, Sequence
+from typing import Mapping, Any, Sequence, Dict
 
 import numpy as np
+from pathlib import Path
 
 from bb_eval_engine.circuits.ngspice.flow import NgspiceFlowManager
 from bb_eval_engine.data.design import Design
@@ -46,21 +47,26 @@ class TwoStageFlow(NgspiceFlowManager):
             ps_dsns.append(self.get_netlist_params(dsn, ['ps'], name='ps'))
             tran_dsns.append(self.get_netlist_params(dsn, ['tran'], name='tran'))
 
-        raw_results = self.ngspice_lut['ol'].run(ol_dsns, verbose=self.verbose)
-        results_ol = [res[1] for res in raw_results]
-        raw_results = self.ngspice_lut['cm'].run(cm_dsns, verbose=self.verbose)
-        results_cm = [res[1] for res in raw_results]
-        raw_results = self.ngspice_lut['ps'].run(ps_dsns, verbose=self.verbose)
-        results_ps = [res[1] for res in raw_results]
-        raw_results = self.ngspice_lut['tran'].run(tran_dsns, verbose=self.verbose)
-        results_tran = [res[1] for res in raw_results]
+        results_tbs = []
+        for tb, dsns in zip(('ol', 'cm', 'ps', 'tran'), (ol_dsns, cm_dsns, ps_dsns, tran_dsns)):
+            with self.ngspice_lut[tb] as netlister:
+                raw_results = netlister.run(dsns, verbose=self.verbose)
+                results_tbs.append([res[1] for res in raw_results])
 
-        results = []
+        # raw_results = self.ngspice_lut['ol'].run(ol_dsns, verbose=self.verbose)
+        # results_ol = [res[1] for res in raw_results]
+        # raw_results = self.ngspice_lut['cm'].run(cm_dsns, verbose=self.verbose)
+        # results_cm = [res[1] for res in raw_results]
+        # raw_results = self.ngspice_lut['ps'].run(ps_dsns, verbose=self.verbose)
+        # results_ps = [res[1] for res in raw_results]
+        # raw_results = self.ngspice_lut['tran'].run(tran_dsns, verbose=self.verbose)
+        # results_tran = [res[1] for res in raw_results]
 
-        for ol, cm, ps, tran in zip(results_ol, results_cm, results_ps, results_tran):
-            results.append(self._get_specs(ol, cm, ps, tran))
+        results_eval = []
+        for ol, cm, ps, tran in zip(*results_tbs):
+            results_eval.append(self._get_specs(ol, cm, ps, tran))
 
-        return results
+        return results_eval
 
     def _get_specs(self, result_ol, result_cm, result_ps, result_tran):
         fdbck = self.fb_factor

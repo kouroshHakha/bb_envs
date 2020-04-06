@@ -1,4 +1,4 @@
-from typing import Sequence, Any, Callable
+from typing import Sequence, Any, Callable, List
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -56,3 +56,30 @@ class FnFlow:
             plt.savefig(fpath, dpi=200)
         elif show_fig:
             plt.show()
+
+class MultiOutputFnFlow:
+    def __init__(self, fnames: Sequence[str]) -> None:
+
+        self.fns: List[Callable] = []
+        for fn in fnames:
+            self.fns.append(registered_functions[fn])
+
+    def batch_evaluate(self, batch_of_designs: Sequence[Design], **kwargs) -> Sequence[Any]:
+        cur_order = list(batch_of_designs[0].value_dict.keys())
+        params_vec = np.stack([list(x.value_dict.values()) for x in batch_of_designs], axis=0)
+        desired_order = [f'x{i}' for i in range(params_vec.shape[-1])]
+        desired_axis = [cur_order.index(var) for var in desired_order]
+
+        correct_params_vec = params_vec[..., desired_axis]
+
+        fvals = np.concatenate([fn(correct_params_vec).reshape(-1, 1) for fn in self.fns], axis=1)
+        mults = np.prod(fvals, axis=-1)
+
+        results = []
+        for row, mult in zip(fvals, mults):
+            result = dict(
+                [(f'f{i}', fi) for i, fi in enumerate(row)] + [('valid', True), ('obj', mult)]
+            )
+            results.append(result)
+
+        return results

@@ -40,6 +40,9 @@ def synt(x):
 def synt2(x):
     return (0.25*((x+0.5)**4).sum(-1) - 2 * ((x+0.5)**2).sum(-1)) / x.shape[-1] + 5
 
+def synt3(x):
+    return (0.25*((x+1)**4).sum(-1) - 2 * ((x+1)**2).sum(-1)) / x.shape[-1] + 5
+
 def ackley(x: Union[np.ndarray, numbers.Number]) -> np.ndarray:
     # visualize it for x.dim = 2
     a = 20
@@ -126,4 +129,5 @@ registered_functions = {
     'levy': levy,
     'synt': synt,
     'synt2': synt2,
+    'synt3': synt3,
 }

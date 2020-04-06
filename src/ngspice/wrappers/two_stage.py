@@ -1,4 +1,4 @@
-from typing import Mapping
+from typing import Mapping, Any
 
 import numpy as np
 from pathlib import Path
@@ -9,18 +9,10 @@ from bb_eval_engine.circuits.ngspice.netlist import NgSpiceWrapper, StateValue
 
 class TwoStageOpenLoop(NgSpiceWrapper):
 
-    def translate_result(self, state: Mapping[str, StateValue]) -> Mapping[str, StateValue]:
+    def translate_result(self, state: Mapping[str, StateValue],
+                         results: Mapping[str, np.ndarray]) -> Mapping[str, Any]:
 
-        hdf5_file = self.get_design_folder(state['id']) / 'ol.hdf5'
-        # Get raw data
-        if hdf5_file.exists():
-            ret = self.load_hdf5(hdf5_file)
-            vout, freq, ibias = ret['vout'], ret['freq'], ret['ibias']
-        else:
-            freq, vout,  ibias = self.parse_output(state)
-            dict_to_save = dict(freq=freq, vout=vout, ibias=np.array(ibias))
-            self.save_as_hdf5(dict_to_save, hdf5_file)
-
+        vout, freq, ibias = results['vout'], results['freq'], results['ibias']
         # Post process raw data
         gain = self.find_dc_gain(vout)
         ugbw = self.find_ugbw(freq, vout)
@@ -29,7 +21,7 @@ class TwoStageOpenLoop(NgSpiceWrapper):
         return dict(ugbw=ugbw, gain=gain, phm=phm, Ibias=ibias)
 
     @classmethod
-    def parse_output(cls, state):
+    def parse_output(cls, state) -> Mapping[str, np.ndarray]:
 
         ac_fname = Path(state['ac'])
         dc_fname = Path(state['dc'])
@@ -47,7 +39,7 @@ class TwoStageOpenLoop(NgSpiceWrapper):
         vout = vout_real + 1j*vout_imag
         ibias = -dc_raw_outputs[1]
 
-        return freq, vout, ibias
+        return dict(freq=freq, vout=vout, ibias=ibias)
 
     @classmethod
     def find_dc_gain (cls, vout):
@@ -103,25 +95,17 @@ class TwoStageOpenLoop(NgSpiceWrapper):
 
 class TwoStageCommonModeGain(NgSpiceWrapper):
 
-    def translate_result(self, state: Mapping[str, StateValue]) -> Mapping[str, StateValue]:
+    def translate_result(self, state: Mapping[str, StateValue],
+                         results: Mapping[str, np.ndarray]) -> Mapping[str, Any]:
 
-        hdf5_file = self.get_design_folder(state['id']) / 'cm.hdf5'
-            # Get raw data
-        if hdf5_file.exists():
-            ret = self.load_hdf5(hdf5_file)
-            vout, freq = ret['vout'], ret['freq']
-        else:
-            freq, vout= self.parse_output(state)
-            dict_to_save = dict(freq=freq, vout=vout)
-            self.save_as_hdf5(dict_to_save, hdf5_file)
-
+        vout, freq = results['vout'], results['freq']
         # Post process raw data
         gain = self.find_dc_gain(vout)
 
         return dict(cm_gain=gain)
 
     @classmethod
-    def parse_output(cls, state):
+    def parse_output(cls, state) -> Mapping[str, np.ndarray]:
         cm_fname = Path(state['cm'])
 
         if not cm_fname.is_file():
@@ -133,7 +117,7 @@ class TwoStageCommonModeGain(NgSpiceWrapper):
         vout_imag = cm_raw_outputs[:, 2]
         vout = vout_real + 1j*vout_imag
 
-        return freq, vout
+        return dict(freq=freq, vout=vout)
 
     @classmethod
     def find_dc_gain (cls, vout):
@@ -142,20 +126,10 @@ class TwoStageCommonModeGain(NgSpiceWrapper):
 
 class TwoStagePowerSupplyGain(NgSpiceWrapper):
 
-    def translate_result(self, state: Mapping[str, StateValue]) -> Mapping[str, StateValue]:
+    def translate_result(self, state: Mapping[str, StateValue],
+                         results: Mapping[str, np.ndarray]) -> Mapping[str, Any]:
 
-        hdf5_file = self.get_design_folder(state['id']) / 'ps.hdf5'
-        # Get raw data
-        if hdf5_file.exists():
-            ret = self.load_hdf5(hdf5_file)
-            vout, freq = ret['vout'], ret['freq']
-        else:
-            freq, vout = self.parse_output(state)
-            dict_to_save = dict(freq=freq, vout=vout)
-            self.save_as_hdf5(dict_to_save, hdf5_file)
-
-        # Post process raw data
-        freq, vout = self.parse_output(state)
+        vout, freq = results['vout'], results['freq']
         gain = self.find_dc_gain(vout)
 
         return dict(ps_gain=gain)
@@ -163,7 +137,6 @@ class TwoStagePowerSupplyGain(NgSpiceWrapper):
     @classmethod
     def parse_output(cls, state):
         ps_fname = Path(state['ps'])
-
 
         if not ps_fname.is_file():
             print(f"ps file doesn't exist: {ps_fname}")
@@ -174,7 +147,7 @@ class TwoStagePowerSupplyGain(NgSpiceWrapper):
         vout_imag = ps_raw_outputs[:, 2]
         vout = vout_real + 1j*vout_imag
 
-        return freq, vout
+        return dict(freq=freq, vout=vout)
 
     @classmethod
     def find_dc_gain (cls, vout):
@@ -182,19 +155,9 @@ class TwoStagePowerSupplyGain(NgSpiceWrapper):
 
 class TwoStageTransient(NgSpiceWrapper):
 
-    def translate_result(self, state: Mapping[str, StateValue]) -> Mapping[str, StateValue]:
-
-        hdf5_file = self.get_design_folder(state['id']) / 'tran.hdf5'
-
-        # Get raw data
-        if hdf5_file.exists():
-            spec = self.load_hdf5(hdf5_file)
-        else:
-            time, vout, vin = self.parse_output(state)
-            spec = dict(time=time, vout=vout, vin=vin)
-            self.save_as_hdf5(spec, hdf5_file)
-
-        return spec
+    def translate_result(self, state: Mapping[str, StateValue],
+                         results: Mapping[str, np.ndarray]) -> Mapping[str, Any]:
+        return results
 
 
     @classmethod
@@ -209,7 +172,7 @@ class TwoStageTransient(NgSpiceWrapper):
         vout =  tran_raw_outputs[:, 1]
         vin =   tran_raw_outputs[:, 3]
 
-        return time, vout, vin
+        return dict(time=time, vout=vout, vin=vin)
 
 
     @classmethod
