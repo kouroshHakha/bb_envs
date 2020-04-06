@@ -7,13 +7,14 @@ import scipy.optimize as sciopt
 
 from bb_eval_engine.circuits.ngspice.netlist import NgSpiceWrapper, StateValue
 
+
 class CsAmpNgspiceWrapper(NgSpiceWrapper):
 
     def translate_result(self, state: Mapping[str, StateValue],
                          results: Mapping[str, np.ndarray]) -> Mapping[str, StateValue]:
 
         # use parse output here
-        freq, vout, ibias = self.parse_output(state)
+        freq, vout, ibias = results['freq'], results['vout'], results['ibias']
         bw = self.find_bw(vout, freq)
         gain = self.find_dc_gain(vout)
 

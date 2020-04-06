@@ -3,15 +3,15 @@ This is an example of using blackbox_eval_engine setup for a two_stage_opamp sim
 It includes open-loop ac, transient, power supply rejection and common mode testbenches.
 """
 
-from typing import Mapping, Any, Sequence, Dict
+from typing import Mapping, Any, Sequence
 
 import numpy as np
-from pathlib import Path
 
 from bb_eval_engine.circuits.ngspice.flow import NgspiceFlowManager
 from bb_eval_engine.data.design import Design
 
 from ..wrappers.two_stage import TwoStageTransient
+
 
 class TwoStageFlow(NgspiceFlowManager):
 
@@ -20,7 +20,7 @@ class TwoStageFlow(NgspiceFlowManager):
         self.fb_factor = kwargs['feedback_factor']
         self.tot_err = kwargs['tot_err']
 
-    def interpret(self, design: Design, *args, **kwargs) -> Mapping[str, Any]:
+    def interpret(self, design: Design, *args) -> Mapping[str, Any]:
 
         mode = args[0]
 
@@ -52,15 +52,6 @@ class TwoStageFlow(NgspiceFlowManager):
             with self.ngspice_lut[tb] as netlister:
                 raw_results = netlister.run(dsns, verbose=self.verbose)
                 results_tbs.append([res[1] for res in raw_results])
-
-        # raw_results = self.ngspice_lut['ol'].run(ol_dsns, verbose=self.verbose)
-        # results_ol = [res[1] for res in raw_results]
-        # raw_results = self.ngspice_lut['cm'].run(cm_dsns, verbose=self.verbose)
-        # results_cm = [res[1] for res in raw_results]
-        # raw_results = self.ngspice_lut['ps'].run(ps_dsns, verbose=self.verbose)
-        # results_ps = [res[1] for res in raw_results]
-        # raw_results = self.ngspice_lut['tran'].run(tran_dsns, verbose=self.verbose)
-        # results_tran = [res[1] for res in raw_results]
 
         results_eval = []
         for ol, cm, ps, tran in zip(*results_tbs):
