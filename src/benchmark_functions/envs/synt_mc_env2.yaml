@@ -5,7 +5,7 @@ bb_engine_params:
     fnames: [synt, synt2]
 
   params:
-    x0:   !!python/tuple [-5, 5, 0.05]
+    x0:   !!python/tuple [-8, 8, 0.05]
 #    x1:   !!python/tuple [-5, 5, 0.05]
 #    x2:   !!python/tuple [-5, 5, 0.05]
 #    x3:   !!python/tuple [-5, 5, 0.05]

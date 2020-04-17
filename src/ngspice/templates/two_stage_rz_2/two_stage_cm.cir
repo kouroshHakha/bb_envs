@@ -11,8 +11,16 @@ two_stage_amp common mode gain test
 .param cc={{cc}}
 .param rz={{rz}}
 .param ibias=30u
-.param cload=100p
+.param cload=10p
 .param vcm=0.6
+
+* parasitic modeling
+cpar_out net6 VSS {(mn5+mp3) * 5f + rz * 1f}
+cpar8 net8 VSS {cc * 0.05 + rz * 1f}
+cpar_o1 net5 VSS {cc * 0.03 + (mp1 + mn1 + mp3) * 5f}
+cpar_m net4 VSS {(2 * mp1 + mn1) * 5f}
+cpar_tail net3 VSS {(2 * mn1 + mn3) * 5f}
+cpar_bias net7 VSS {(mn4 + mn3 + mn5) * 5f}
 
 mp1 net4 net4 VDD VDD pmos w=wp1 l=lp1 m=mp1
 mp2 net5 net4 VDD VDD pmos w=wp1 l=lp1 m=mp1
