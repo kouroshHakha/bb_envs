@@ -50,7 +50,7 @@ class TwoStageFlow(NgspiceFlowManager):
         results_tbs = []
         for tb, dsns in zip(('ol', 'cm', 'ps', 'tran'), (ol_dsns, cm_dsns, ps_dsns, tran_dsns)):
             with self.ngspice_lut[tb] as netlister:
-                raw_results = netlister.run(dsns, verbose=self.verbose)
+                raw_results = netlister.run(dsns, verbose=self.verbose, debug=self.debug)
                 results_tbs.append([res[1] for res in raw_results])
 
         results_eval = []

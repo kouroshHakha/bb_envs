@@ -56,25 +56,63 @@ class TwoStageOpenLoop(NgSpiceWrapper):
 
     @classmethod
     def find_phm(cls, freq, vout):
+
+        """
+        NOTE:
+            Input is assumed to be always ac=1 (real>0). It's also assumed that freq[0] is dc.
+            In this case, real(gain[0]) < 0 means an inverting gain and real(gain[1]) > 0 means
+            non-inverting.
+
+            For non-inverting gain the origin of phase is 0 degrees (also returned by np.angle).
+            so phase margin should be distance from -180 at fu.
+
+            For inverting gain, the origin of phase should be 180 and the margin is defined as
+            distance from 0 at fu. This is the case that should be post-processed further
+            because np.angle does not always return the correct origin. Depending on circuit setup
+            in some corner cases the origin could be inferred as -180.
+            The solution is that in those cases phase is added to 360 to move it back to 180.
+
+            for fu, gain is defined as abs(vout):
+            1. if gain crosses 1 at some point, the first crossing is fu. In this case
+            fstart < fu < fstop and pm can be determined. This is the typical case
+            2. if gain is always below 1, it means that you are always stable
+            (even with a terrible gain) so pm should be 180 (maximum)
+            3. if gain is always greater than 1, there will be no crossing, but you will be stable
+            if minimum phase margin is still large, so in this case it makes sense to return
+            the minimum of phase margin across all observed frequencies.
+
+            we will make pm non-negative (zero basically means you are not stable), so we will
+            return max(pm, 0)
+
+        """
+
         gain = np.abs(vout)
         phase = np.angle(vout, deg=False)
         phase = np.unwrap(phase) # unwrap the discontinuity
         phase = np.rad2deg(phase) # convert to degrees
 
-        # plt.subplot(211)
-        # plt.plot(np.log10(freq[:200]), 20*np.log10(gain[:200]))
-        # plt.subplot(212)
-        # plt.plot(np.log10(freq[:200]), phase)
-
         phase_fun = interp.interp1d(freq, phase, kind='quadratic')
         ugbw, valid = cls._get_best_crossing(freq, gain, val=1)
+
+        gain_ltu = np.all(gain < 1)
+        gain_gtu = np.all(gain > 1)
+        # sanity check
+        assert (gain_ltu or gain_gtu) is not valid, \
+            ValueError(f'valid = {valid}, gain_ltu = {gain_ltu}, gain_gtu = {gain_gtu}')
+
+        inv = np.real(vout[0]) < 0
+
         if valid:
-            if phase_fun(ugbw) > 0:
-                return -180+phase_fun(ugbw)
-            else:
-                return 180 + phase_fun(ugbw)
+            pm = phase_fun(ugbw)
         else:
-            return -180
+            pm  = 180 if gain_ltu else np.min(phase)
+
+        if inv and not (phase_fun(freq[0]) > 0):
+            pm += 360
+        elif not inv and not gain_ltu:
+            pm += 180
+
+        return max(pm, 0)
 
     @classmethod
     def _get_best_crossing(cls, xvec, yvec, val):
