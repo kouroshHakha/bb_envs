@@ -9,10 +9,10 @@ from pathlib import Path
 from bb_envs.bmark_algs.tpe import Explorer
 
 if __name__ == '__main__':
-    env = import_bb_env('bb_envs/src/bb_envs/ngspice/envs/two_stage_opamp_3.yaml')
+    env = import_bb_env('bb_envs/src/bb_envs/ngspice/envs/two_stage_opamp_1.yaml')
     seed =  10
     load = False
-    fname = 'two_stage_tpe3.pkl'
+    fname = 'two_stage_tpe1.pkl'
 
     s = time.time()
     explorer = Explorer(env, seed=seed)

@@ -9,8 +9,8 @@ import time
 from pathlib import Path
 
 if __name__ == '__main__':
-    env = import_bb_env('bb_envs/src/bb_envs/ngspice/envs/two_stage_opamp_2.yaml')
-    fname = 'two_stage_random2.pkl'
+    env = import_bb_env('bb_envs/src/bb_envs/ngspice/envs/two_stage_opamp_1.yaml')
+    fname = 'two_stage_random1.pkl'
     seed =  10
 
     ffname = (Path('datasets') / fname)
