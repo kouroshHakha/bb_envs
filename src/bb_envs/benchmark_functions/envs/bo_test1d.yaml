@@ -1,0 +1,11 @@
+bb_engine: bb_eval_engine.circuits.base.CircuitsEngineBase
+bb_engine_params:
+  flow_manager_cls: bb_envs.benchmark_functions.flow.FnFlow
+  flow_manager_params:
+    fn: bo_test1d
+
+  params:
+    x1:   !!python/tuple [0, 2, 0.01]
+
+  spec_range:
+    val:  [!!float 2, null, 1]

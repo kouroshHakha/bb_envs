@@ -5,7 +5,7 @@ from typing import Union, List
 import matplotlib.pyplot as plt
 import numpy as np
 
-from gacem.alg.utils.weight_compute import weight
+# from gacem.alg.utils.weight_compute import weight
 
 def mixture_ackley(x: Union[np.ndarray, numbers.Number]) -> np.ndarray:
     # visualize it for x.dim = 2
@@ -100,24 +100,31 @@ def pinter(x: Union[np.ndarray, numbers.Number]) -> np.ndarray:
     return (y1 + y2 + y3).sum(-1)
 
 
-def show_weight_on_all(x1, x2, fn, value=4, value_avg=4, mode='le', ax=None, **kwargs):
-    warnings.warn('show_weight_on_all is deprecated', DeprecationWarning)
+def bo_test1d(x: Union[np.ndarray, numbers.Number]) -> np.ndarray:
+    if isinstance(x, numbers.Number):
+        x = np.array([x])
+    f = np.sin((4*np.pi)*x) + np.sin((7*np.pi)*x)
+    return f
 
-    if ax is None:
-        ax = plt.gca()
 
-    x_mesh, y_mesh = np.meshgrid(x1, x2)
-    xflat = x_mesh.flatten()
-    yflat = y_mesh.flatten()
-
-    xin = np.stack([xflat, yflat], axis=-1)
-
-    yout = fn(xin)
-    weights = weight(yout, value, value_avg, mode)
-    z_mesh = weights.reshape(x_mesh.shape)
-    im = ax.pcolormesh(x_mesh, y_mesh, z_mesh, **kwargs)
-    plt.colorbar(im, ax=ax)
-    return ax
+# def show_weight_on_all(x1, x2, fn, value=4, value_avg=4, mode='le', ax=None, **kwargs):
+#     warnings.warn('show_weight_on_all is deprecated', DeprecationWarning)
+#
+#     if ax is None:
+#         ax = plt.gca()
+#
+#     x_mesh, y_mesh = np.meshgrid(x1, x2)
+#     xflat = x_mesh.flatten()
+#     yflat = y_mesh.flatten()
+#
+#     xin = np.stack([xflat, yflat], axis=-1)
+#
+#     yout = fn(xin)
+#     weights = weight(yout, value, value_avg, mode)
+#     z_mesh = weights.reshape(x_mesh.shape)
+#     im = ax.pcolormesh(x_mesh, y_mesh, z_mesh, **kwargs)
+#     plt.colorbar(im, ax=ax)
+#     return ax
 
 
 registered_functions = {
@@ -130,4 +137,5 @@ registered_functions = {
     'synt': synt,
     'synt2': synt2,
     'synt3': synt3,
+    'bo_test1d': bo_test1d,
 }
