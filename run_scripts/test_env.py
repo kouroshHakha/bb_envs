@@ -20,4 +20,13 @@ if __name__ == '__main__':
     specs = read_yaml(_args.spec_file)
     engine = import_class(specs['bb_engine'])(specs=specs['bb_engine_params'])
 
+    # just generates the designs
+    designs_empty = engine.generate_rand_designs(n=2, evaluate=False)
+    # evaluates the design
+    designs_populated = engine.evaluate(designs_empty, do_interpet=True)
+    # generates the design and also evaluates it
+    designs = engine.generate_rand_designs(n=2, evaluate=True)
+
+
+
     pdb.set_trace()
