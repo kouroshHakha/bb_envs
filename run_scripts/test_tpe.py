@@ -12,7 +12,7 @@ if __name__ == '__main__':
     env = import_bb_env('bb_envs/src/bb_envs/ngspice/envs/two_stage_opamp_1.yaml')
     seed =  10
     load = False
-    fname = 'two_stage_tpe1.pkl'
+    fname = 'two_stage_env1_tpe_s10.pkl'
 
     s = time.time()
     explorer = Explorer(env, seed=seed)
