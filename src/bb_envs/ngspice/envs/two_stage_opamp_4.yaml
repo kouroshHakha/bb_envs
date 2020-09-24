@@ -1,0 +1,42 @@
+bb_engine: bb_eval_engine.circuits.base.CircuitsEngineBase
+bb_engine_params:
+  flow_manager_cls: bb_envs.ngspice.flows.two_stage.TwoStageFlow
+  flow_manager_params:
+    sim_model: bb_envs/src/bb_envs/ngspice/models/45nm_bulk.txt
+    feedback_factor: !!float 1.0
+    tot_err:  !!float 0.01
+    num_workers: 1
+    ngspice_config:
+      ol:
+        ngspice_cls: bb_envs.ngspice.wrappers.two_stage.TwoStageOpenLoop
+        netlist: bb_envs/src/bb_envs/ngspice/templates/two_stage_rz_4/two_stage_ol.cir
+      cm:
+        ngspice_cls: bb_envs.ngspice.wrappers.two_stage.TwoStageCommonModeGain
+        netlist: bb_envs/src/bb_envs/ngspice/templates/two_stage_rz_4/two_stage_cm.cir
+      ps:
+        ngspice_cls: bb_envs.ngspice.wrappers.two_stage.TwoStagePowerSupplyGain
+        netlist: bb_envs/src/bb_envs/ngspice/templates/two_stage_rz_4/two_stage_ps.cir
+      tran:
+        ngspice_cls: bb_envs.ngspice.wrappers.two_stage.TwoStageTransient
+        netlist: bb_envs/src/bb_envs/ngspice/templates/two_stage_rz_4/two_stage_tran.cir
+
+  params:
+    mp1:  !!python/tuple [1, 100, 1]
+    mn1:  !!python/tuple [1, 100, 1]
+    mp3:  !!python/tuple [1, 100, 1]
+    mn3:  !!python/tuple [1, 100, 1]
+    mn4:  !!python/tuple [1, 100, 1]
+    mn5:  !!python/tuple [1, 100, 1]
+    cc:   !!python/tuple [!!float 0.1e-12, !!float 10.0e-12, !!float 0.1e-12]
+    rz:   !!python/tuple [!!float 0, !!float 1e3, !!float 50]
+
+
+  spec_range:
+    gain: [!!float 300.0, null, 1]
+    ugbw: [!!float 10.0e6, null, 1] #Hz
+    pm: [!!float 60.0, null, 1]
+    tset: [null, !!float 60.0e-9, 1] #Seconds
+    psrr: [!!float 50.0, null, 1] #db
+    cmrr: [!!float 50.0, null, 1] #db
+    offset_sys: [null, !!float 1.0e-3, 1] #Volts
+    ibias: [null, !!float 0.2e-3, 1] #Amper

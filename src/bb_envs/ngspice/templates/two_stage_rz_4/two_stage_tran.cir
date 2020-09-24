@@ -1,0 +1,72 @@
+two_stage_amp common mode gain test
+* increased cap/mos to 10f from 5f
+* increased cap/rz to 5f from 1f
+* increased cc effect from 0.05,0.03 to 0.1cc
+* increase effective rz from 1*rz to 1.1*rz
+* added series resistor to critical branches of design
+*       - degeneration resistor of 0.6 ohms * mn1 or mn2 with 10% mismatch
+*       - gate resistance between mn4 and mn3 0.3 ohms * (mn4 + mn3)
+*       - gate resistance between mn3 and mn5 0.3 ohms * (mn5 + mn3)
+*       - source resistance between in mn3 0.6 ohms * (mn3)
+
+
+* Two stage OPAMP
+.include "{{include}}"
+.param wp1=0.5u lp1=90n mp1={{mp1}}
+.param wn1=0.5u ln1=90n mn1={{mn1}}
+.param wn3=0.5u ln3=90n mn3={{mn3}}
+.param wp3=0.5u lp3=90n mp3={{mp3}}
+.param wn4=0.5u ln4=90n mn4={{mn4}}
+.param wn5=0.5u ln5=90n mn5={{mn5}}
+.param cc={{cc}}
+.param rz={{rz}}
+.param ibias=30u
+.param cload=10p
+.param vcm=0.6
+
+* parasitic modeling
+cpar_out net6 VSS {(mn5+mp3) * 10f + rz * 5f}
+cpar8 net8 VSS {cc * 0.1 + rz * 5f}
+cpar_o1 net5 VSS {cc * 0.1 + (mp1 + mn1 + mp3) * 10f}
+cpar_m net4 VSS {(2 * mp1 + mn1) * 10f}
+cpar_tail net3 VSS {(2 * mn1 + mn3) * 10f}
+cpar_bias net7 VSS {(mn4 + mn3 + mn5) * 10f}
+
+rpar_sn1 sn1 net3 {mn1 * 0.6}
+rpar_sn2 sn2 net3 {mn1 * 0.6 * 1.1}
+rpar_gn43 net7 gn3 {(mn4 + mn3) * 0.3}
+rpar_gn35 gn3 gn5 {(mn5 + mn3) * 0.3}
+rpar_sn3 sn3  VSS {mn3 * 0.6}
+
+
+mp1 net4 net4 VDD VDD pmos w=wp1 l=lp1 m=mp1
+mp2 net5 net4 VDD VDD pmos w=wp1 l=lp1 m=mp1
+mn1 net4 net2 sn1 sn1 nmos w=wn1 l=ln1 m=mn1
+mn2 net5 net1 sn2 sn2 nmos w=wn1 l=ln1 m=mn1
+mn3 net3 gn3 sn3 sn3 nmos w=wn3 l=ln3 m=mn3
+mn4 net7 net7 VSS VSS nmos w=wn4 l=ln4 m=mn4
+mp3 net6 net5 VDD VDD pmos w=wp3 l=lp3 m=mp3
+mn5 net6 gn5 VSS VSS nmos w=wn5 l=ln5 m=mn5
+cc net5 net8 cc
+rz net8 net6 {1.1 * rz}
+ibias VDD net7 ibias
+
+vin net1 cm PULSE(0 20m 0 10p 10p 0.5)
+vcm cm 0 dc=vcm
+vnn net6 net2 dc=0
+
+vdd VDD 0 dc=1.2
+vss 0 VSS dc=0
+CL net6 0 cload
+
+.tran 100p 1u
+
+.control
+run
+set units=degrees
+set wr_vecnames
+option numdgt=7
+wrdata {{tran}} v(net6) v(net1) i(vdd)
+.endc
+
+.end
