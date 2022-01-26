@@ -1,0 +1,47 @@
+bb_engine: bb_eval_engine.circuits.base.CircuitsEngineBase
+bb_engine_params:
+  flow_manager_cls: bb_envs.ngspice.flows.two_stage_graph.TwoStageGraphFlow
+  flow_manager_params:
+    sim_model: bb_envs/src/bb_envs/ngspice/models/45nm_bulk.txt
+    # num_workers: 1
+    ngspice_config:
+      graph:
+        ngspice_cls: bb_envs.ngspice.wrappers.two_stage_graph.TwoStageOpenLoop
+        netlist: bb_envs/src/bb_envs/ngspice/templates/two_stage_graph/two_stage_graph.cir
+
+  params:
+    mp1:  !!python/tuple [1, 100, 1]
+    mn1:  !!python/tuple [1, 100, 1]
+    mp3:  !!python/tuple [1, 100, 1]
+    mn3:  !!python/tuple [1, 100, 1]
+    mn4:  !!python/tuple [1, 100, 1]
+    mn5:  !!python/tuple [1, 100, 1]
+    cc:   !!python/tuple [!!float 0.1e-12, !!float 10.0e-12, !!float 0.1e-12]
+    rz:   !!python/tuple [!!float 0, !!float 1e3, !!float 50]
+    cload:   !!python/tuple [!!float 0.1e-12, !!float 10.0e-12, !!float 0.1e-12]
+    
+    ibias_dc:   !!python/tuple [!!float 10.0e-6, !!float 50.0e-6, !!float 5.0e-6]
+    vss_dc:   !!python/tuple [!!float 0, !!float 0.2, !!float 0.05]
+    vdd_dc:   !!python/tuple [!!float 1.0, !!float 1.2, !!float 0.05]
+    vin1_dc:   !!python/tuple [!!float 0.4, !!float 0.8, !!float 0.05]
+    vin2_dc:   !!python/tuple [!!float 0.4, !!float 0.8, !!float 0.05]
+    ibias_mag:   !!python/tuple [0, 2, 1]
+    ibias_ph:   !!python/tuple [0, 360, 180]
+    vss_mag:   !!python/tuple [0, 2, 1]
+    vss_ph:   !!python/tuple [0, 360, 180]
+    vdd_mag:   !!python/tuple [0, 2, 1]
+    vdd_ph:   !!python/tuple [0, 360, 180]
+    vin2_mag:   !!python/tuple [1, 2, 1]
+    vin2_ph:   !!python/tuple [0, 360, 180]
+    vin1_mag:   !!python/tuple [1, 2, 1]
+    vin1_ph:   !!python/tuple [180, 360, 180]
+
+  spec_range:
+    gain: [!!float 300.0, null, 1]
+    ugbw: [!!float 10.0e6, null, 1] #Hz
+    pm: [!!float 60.0, null, 1]
+    tset: [null, !!float 60.0e-9, 1] #Seconds
+    psrr: [!!float 50.0, null, 1] #db
+    cmrr: [!!float 50.0, null, 1] #db
+    offset_sys: [null, !!float 1.0e-3, 1] #Volts
+    ibias: [null, !!float 0.2e-3, 1] #Amper

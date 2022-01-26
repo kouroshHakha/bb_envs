@@ -1,0 +1,50 @@
+two_stage_amp openloop test
+
+* Two stage OPAMP
+.include "{{include}}"
+.param wp1=0.5u lp1=90n mp1={{mp1}}
+.param wn1=0.5u ln1=90n mn1={{mn1}}
+.param wn3=0.5u ln3=90n mn3={{mn3}}
+.param wp3=0.5u lp3=90n mp3={{mp3}}
+.param wn4=0.5u ln4=90n mn4={{mn4}}
+.param wn5=0.5u ln5=90n mn5={{mn5}}
+.param cc={{cc}}
+.param rz={{rz}}
+.param cload={{cload}}
+.param ibias_dc={{ibias_dc}} ibias_mag={{ibias_mag}} ibias_ph={{ibias_ph}}
+.param vss_dc={{vss_dc}} vss_mag={{vss_mag}} vss_ph={{vss_ph}}
+.param vdd_dc={{vdd_dc}} vdd_mag={{vdd_mag}} vdd_ph={{vdd_ph}}
+.param vin2_dc={{vin2_dc}} vin2_mag={{vin2_mag}} vin2_ph={{vin2_ph}}
+.param vin1_dc={{vin1_dc}} vin1_mag={{vin1_mag}} vin1_ph={{vin1_ph}}
+
+mp1 net4 net4 VDD VDD pmos w=wp1 l=lp1 m=mp1
+mp2 net5 net4 VDD VDD pmos w=wp1 l=lp1 m=mp1
+mn1 net4 net2 net3 VSS nmos w=wn1 l=ln1 m=mn1
+mn2 net5 net1 net3 VSS nmos w=wn1 l=ln1 m=mn1
+mn3 net3 net7 VSS VSS nmos w=wn3 l=ln3 m=mn3
+mn4 net7 net7 VSS VSS nmos w=wn4 l=ln4 m=mn4
+mp3 net6 net5 VDD VDD pmos w=wp3 l=lp3 m=mp3
+mn5 net6 net7 VSS VSS nmos w=wn5 l=ln5 m=mn5
+cc net5 net8 cc
+rz net8 net6 rz
+
+vin1 net1 0 DC {vin1_dc} AC {vin1_mag} {vin1_ph} 
+vin2 net2 0 DC {vin2_dc} AC {vin2_mag} {vin2_ph} 
+vvss VSS 0 DC {vss_dc} AC {vss_mag} {vss_ph} 
+vvdd VDD 0 DC {vdd_dc} AC {vdd_mag} {vdd_ph} 
+ibias VDD net7 DC {ibias_dc} AC {ibias_mag} {ibias_ph} 
+CL net6 0 cload
+
+.control
+run
+set units=degrees
+set wr_vecnames
+option numdgt=7
+ac dec 10 1 10G
+wrdata {{ac}} v(net8) v(net7) v(net6) v(net5) v(net4) v(net3) v(net2) v(net1) v(vss) v(vdd) i(vvss) i(vvdd) i(vin1) i(vin2)
+op
+wrdata {{dc}} v(net8) v(net7) v(net6) v(net5) v(net4) v(net3) v(net2) v(net1) v(vss) v(vdd) i(vvss) i(vvdd) i(vin1) i(vin2)
+.endc
+
+.end
+

@@ -5,7 +5,7 @@ bb_engine_params:
     sim_model: bb_envs/src/bb_envs/ngspice/models/45nm_bulk.txt
     feedback_factor: !!float 1.0
     tot_err:  !!float 0.01
-    num_workers: 4
+    # num_workers: 4
     ngspice_config:
       ol:
         ngspice_cls: bb_envs.ngspice.wrappers.two_stage.TwoStageOpenLoop

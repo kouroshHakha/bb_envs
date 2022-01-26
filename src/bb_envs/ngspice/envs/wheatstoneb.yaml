@@ -1,0 +1,28 @@
+bb_engine: bb_eval_engine.circuits.base.CircuitsEngineBase
+bb_engine_params:
+  # flow manager handles how the input parameters are evaluated using a flow of tasks (series of
+  # parallel)
+  flow_manager_cls: bb_envs.ngspice.flows.wheatstoneb.Flow
+  flow_manager_params:
+    sim_model: bb_envs/src/bb_envs/ngspice/models/45nm_bulk.txt
+    ngspice_config:
+      dc:
+        ngspice_cls: bb_envs.ngspice.wrappers.wheatstoneb.Wrapper
+        netlist: bb_envs/src/bb_envs/ngspice/templates/wheatstoneb/wb.cir
+
+  # circuit parameters (degrees of freedom)
+  params:
+    r1: [!!float 0.0,  !!float 1.0, !!float 0.001]
+    r2: [!!float 0.0,  !!float 1.0, !!float 0.001]
+    v1: [!!float 0.0,  !!float 1.0, !!float 0.001]
+    v2: [!!float 0.0,  !!float 1.0, !!float 0.001]
+
+    rp1: [!!float 0.0,  !!float 1.0, !!float 0.001]
+    rp2: [!!float 0.0,  !!float 1.0, !!float 0.001]
+    rp3: [!!float 0.0,  !!float 1.0, !!float 0.001]
+    rp4: [!!float 0.0,  !!float 1.0, !!float 0.001]
+
+    rload: [!!float 0.0,  !!float 1.0, !!float 0.001]
+
+  spec_range: {}
+

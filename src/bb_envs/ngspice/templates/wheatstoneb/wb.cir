@@ -1,0 +1,36 @@
+Wheatstone bridge
+
+* Wheatstone bridge
+.include "{{include}}"
+.param r1={{r1}}
+.param r2={{r2}}
+.param v1={{v1}}
+.param v2={{v2}}
+.param rp1={{rp1}}
+.param rp2={{rp2}}
+.param rp3={{rp3}}
+.param rp4={{rp4}}
+.param rload={{rload}}
+
+vv1 1 0 DC {v1}
+vv2 6 0 DC {v2}
+r1 2 1 {r1}
+r2 5 6 {r2}
+
+rp1 2 3 {rp1}
+rp2 3 5 {rp2}
+rp3 2 4 {rp3}
+rp4 4 5 {rp4}
+
+rload 3 4 {rload}
+
+.control
+run
+set units=degrees
+set wr_vecnames
+option numdgt=7
+op
+wrdata {{dc}} v(1) v(6) v(2) v(3) v(4) v(5) 
+.endc
+
+.end
